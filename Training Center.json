@@ -1,0 +1,334 @@
+{
+  "name": "Final Practical Exam",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Training Center ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email Address ",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Age",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Selected course",
+              "fieldType": "checkbox",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Python"
+                  },
+                  {
+                    "option": "Robotic "
+                  },
+                  {
+                    "option": "ML"
+                  },
+                  {
+                    "option": "AI"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Additional notes",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5d9a3e6f-57e1-46c5-b3c2-b9d916849297",
+      "name": "On form submission",
+      "webhookId": "dbdae191-4c85-4ca4-9ab9-9b764d7a20b5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=بيانات التسجيل الجديدة:\n- الاسم: {{ $json['Name '] }}\n- البريد الإلكتروني:{{ $json['Email Address '] }}\n- العمر: {{ $json.Age }}\n- الدورة المختارة: {{ $json['Selected course'] }}\n- ملاحظات إضافية: {{ $json['Additional notes'] }}\n\nيرجى التحقق من الشروط وإرجاع النتيجة بصيغة JSON.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "أنت مساعد لمركز تعليمي. مهمتك التحقق من صحة بيانات التسجيل:\n\nالشروط الإلزامية:\n1. الاسم: يجب أن يكون بين 3 و 15 حرف\n2. العمر: يجب أن يكون بين 10 و 18 سنة\n\nإذا كانت البيانات متوافقة مع الشروط:\n- ارجع JSON بالشكل التالي:\n{\n  \"status\": \"مقبول\",\n  \"validation_message\": \"تم قبول التسجيل بنجاح\",\n  \"submitted_at\": \"التاريخ الحالي\"\n}\n\nإذا كانت البيانات غير متوافقة:\n- ارجع JSON بالشكل التالي:\n{\n  \"status\": \"غير مقبول\",\n  \"validation_message\": \"سبب الرفض المحدد\",\n  \"submitted_at\": \"التاريخ الحالي\"\n}\n\nأسباب الرفض المحتملة:\n- \"الاسم يجب أن يكون بين 3 و 15 حرف\"\n- \"العمر يجب أن يكون بين 10 و 18 سنة\"\n- \"الاسم والعمر غير متوافقين مع الشروط\"\n\nأرجع النتيجة بصيغة JSON فقط بدون أي نص إضافي.\nالصيغة المطلوبة:\n{\n  \"status\": \"مقبول\" أو \"غير مقبول\",\n  \"validation_message\": \"رسالة التأكيد أو الرفض\",\n  \"submitted_at\": \"التاريخ الحالي\"\n}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        224,
+        0
+      ],
+      "id": "0c49379d-2f62-4587-bc14-2c161130f854",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "97259265-0107-4bfa-a7b1-3c26358183e7",
+              "leftValue": "={{ JSON.parse($json.text).status.trim() }}",
+              "rightValue": "مقبول",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        592,
+        0
+      ],
+      "id": "e27ed297-bf3c-453a-802e-6b1c3bcbaaf6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1PWCFiiwO7FEJRxZzt3z9fLvAM0eZifqCfmmX_64leW8",
+          "mode": "list",
+          "cachedResultName": "Exam ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PWCFiiwO7FEJRxZzt3z9fLvAM0eZifqCfmmX_64leW8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "course ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PWCFiiwO7FEJRxZzt3z9fLvAM0eZifqCfmmX_64leW8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name ": "={{ $('On form submission').item.json['Name '] }}",
+            "Email Address ": "={{ $('On form submission').item.json['Email Address '] }}",
+            "Age": "={{ $('On form submission').item.json.Age }}",
+            "Selected course": "={{ $('On form submission').item.json['Selected course'] }}",
+            "Additional notes": "={{ $('On form submission').item.json['Additional notes'] }}",
+            "Status": "={{ JSON.parse($json.text).status }}",
+            "Submitted At": "={{ DateTime.fromISO($('On form submission').item.json.submittedAt).toFormat('dd/MM/yyyy') }}",
+            "Validation Message": "={{ JSON.parse($json.text).validation_message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email Address ",
+              "displayName": "Email Address ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Age",
+              "displayName": "Age",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Selected course",
+              "displayName": "Selected course",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Additional notes",
+              "displayName": "Additional notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Validation Message",
+              "displayName": "Validation Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Submitted At",
+              "displayName": "Submitted At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        0
+      ],
+      "id": "a8959e9d-e4bd-4db0-abb4-5ebab005c9c3",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7vSO4BY8WfOMKqr5",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        192
+      ],
+      "id": "6d92021f-4fed-4320-b328-83bb8f43694c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "uiuvDMkkCLcL2Um2",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "705281f9-e642-4de7-96ce-42ea59f668dd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1a4ff1b75aeaef0194fb35495ae6c04d16f8831dea1ac85dc4018bb2ec922ccb"
+  },
+  "nodeGroups": [],
+  "id": "wJloCJN5dCWQwgSW",
+  "tags": []
+}
