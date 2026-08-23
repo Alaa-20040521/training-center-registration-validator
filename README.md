@@ -115,6 +115,6 @@ The AI acts as a **registration validation assistant** for the training center, 
 
 ---
 
-## 📄 License
-
-Feel free to adapt this workflow for your own use case.
+## License
+This project is licensed under the MIT License — see the LICENSE file.
+If you use or adapt this workflow, please credit Ala'a Yahia Almousa with a link back to this repository.
